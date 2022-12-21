@@ -49,6 +49,9 @@ const Login = (props) => {
   const { isValid: emailIsValid } = emailState;
   const { isValid: passwordIsValid } = passwordState;
 
+  const emailInputRef = React.useRef();
+  const passwordInputRef = React.useRef();
+
   useEffect(() => {
     const identifier = setTimeout(() => {
       console.log('Checking form validity!');
@@ -92,7 +95,13 @@ const Login = (props) => {
 
   const submitHandler = (event) => {
     event.preventDefault();
-    ctx.onLogin(emailState.value, passwordState.value);
+    if (formIsValid) {
+      ctx.onLogin(emailState.value, passwordState.value);
+    } else if (!emailIsValid) {
+      emailInputRef.current.focus();
+    } else {
+      passwordInputRef.current.focus();
+    }
   };
 
   return (
@@ -102,14 +111,16 @@ const Login = (props) => {
           isValid={emailIsValid}
           value={emailState.value}
           onChange={emailChangeHandler}
-          onBlur={validateEmailHandler} />
+          onBlur={validateEmailHandler}
+          ref={emailInputRef} />
         <Input type="password" id="password" label="Password"
           isValid={passwordIsValid}
           value={passwordState.value}
           onChange={passwordChangeHandler}
-          onBlur={validatePasswordHandler} />
+          onBlur={validatePasswordHandler}
+          ref={passwordInputRef} />
         <div className={classes.actions}>
-          <Button type="submit" className={classes.btn} disabled={!formIsValid}>
+          <Button type="submit" className={classes.btn}>
             Login
           </Button>
         </div>
